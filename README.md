@@ -24,6 +24,7 @@ It helps **visually impaired users** navigate their environment safely using **r
 | **Libraries** | OpenCV, SpeechRecognition, pyttsx3 |
 | **IDE** | VS Code / Jupyter Notebook |
 
+![Object Detection Output](detections/Screenshot (115).png)
 
 
 
