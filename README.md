@@ -21,23 +21,11 @@ It helps **visually impaired users** navigate their environment safely using **r
 | **Programming Language** | Python |
 | **Deep Learning Framework** | PyTorch |
 | **Model** | YOLOv8 |
-| **APIs** | Groq API |
 | **Libraries** | OpenCV, SpeechRecognition, pyttsx3 |
 | **IDE** | VS Code / Jupyter Notebook |
 
----
-
-## Output samples
-
-![images] (detections/ Screenshot (115).png)
-Screenshot (115).png
 
 
-"C:\Users\sound\Downloads\Screenshot (114).png"
-
-"C:\Users\sound\Downloads\Screenshot (119).png"
-
-"C:\Users\sound\Downloads\final_withvoice.mp4.avi_snapshot_00.05.993.jpg"
 
 
 
