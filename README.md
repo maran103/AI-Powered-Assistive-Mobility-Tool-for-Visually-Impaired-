@@ -30,6 +30,7 @@ It helps **visually impaired users** navigate their environment safely using **r
 ## Output samples
 
 ![images] (detections/ Screenshot (115).png)
+Screenshot (115).png
 
 
 "C:\Users\sound\Downloads\Screenshot (114).png"
