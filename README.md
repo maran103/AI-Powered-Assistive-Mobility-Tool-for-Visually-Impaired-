@@ -29,7 +29,7 @@ It helps **visually impaired users** navigate their environment safely using **r
 
 ## Output samples
 
-Screenshot (117).png
+![Object Detection Example](Screenshot (117).png)
 
 "C:\Users\sound\Downloads\Screenshot (114).png"
 
