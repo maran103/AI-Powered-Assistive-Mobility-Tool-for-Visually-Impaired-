@@ -33,3 +33,14 @@ It helps **visually impaired users** navigate their environment safely using **r
 ```bash
 git clone https://github.com/<your-username>/AI-Assistive-Tool-For-Visually-Impaired.git
 cd AI-Assistive-Tool-For-Visually-Impaired
+
+python -m venv venv
+source venv/bin/activate  # for Linux/Mac
+venv\Scripts\activate     # for Windows
+
+pip install -r requirements.txt
+
+python app
+
+# Output samples
+
