@@ -27,20 +27,16 @@ It helps **visually impaired users** navigate their environment safely using **r
 
 ---
 
-## ⚙️ Installation & Setup
+## Output samples
 
-### 1️⃣ Clone the repository
-```bash
-git clone https://github.com/<your-username>/AI-Assistive-Tool-For-Visually-Impaired.git
-cd AI-Assistive-Tool-For-Visually-Impaired
+"C:\Users\sound\Downloads\Screenshot (115).png"
 
-python -m venv venv
-source venv/bin/activate  # for Linux/Mac
-venv\Scripts\activate     # for Windows
+"C:\Users\sound\Downloads\Screenshot (114).png"
 
-pip install -r requirements.txt
+"C:\Users\sound\Downloads\Screenshot (119).png"
 
-python app
+"C:\Users\sound\Downloads\final_withvoice.mp4.avi_snapshot_00.05.993.jpg"
 
-# Output samples
+
+
 
