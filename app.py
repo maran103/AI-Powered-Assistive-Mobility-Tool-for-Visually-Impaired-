@@ -175,10 +175,10 @@ def process_frame(frame, current_time, last_narration_time, cooldown, audio_segm
                     cv2.LINE_AA)
 
         # Generate TTS
-        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
-            gTTS(text=guidance, lang="en").save(tmp.name)
-            seg = AudioSegment.from_file(tmp.name, format="mp3")
-            audio_segments.append(seg + AudioSegment.silent(duration=400))
+        #with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+         #   gTTS(text=guidance, lang="en").save(tmp.name)
+         #   seg = AudioSegment.from_file(tmp.name, format="mp3")
+          #  audio_segments.append(seg + AudioSegment.silent(duration=400))
 
         last_narration_time = current_time
 
