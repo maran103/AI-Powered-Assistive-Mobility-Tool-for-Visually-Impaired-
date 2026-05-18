@@ -1,0 +1,9 @@
+ultralytics
+groq
+gtts
+opencv-python-headless
+streamlit
+moviepy==1.0.3
+pydub
+Pillow
+numpy
