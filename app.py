@@ -239,10 +239,13 @@ if "Image" in mode:
             st.stop()
         #file_bytes = np.frombuffer(uploaded.read(), np.uint8)
         #frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-
-        with st.spinner("Running detection..."):
-            audio_segments = []
-            annotated, _ = process_frame(frame, 0, -999, cooldown, audio_segments)
+        try:
+            with st.spinner("Running detection..."):
+                audio_segments = []
+                annotated, _ = process_frame(frame, 0, -999, cooldown, audio_segments)
+        except Exception as e:
+            st.error(f"Error occurred: {e}")
+            st.stop()
 
         col1, col2 = st.columns(2)
         with col1:
