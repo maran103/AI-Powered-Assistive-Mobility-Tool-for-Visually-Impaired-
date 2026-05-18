@@ -54,8 +54,8 @@ st.markdown('<div class="subtitle">Real-time navigation guidance for the visuall
 @st.cache_resource
 def load_models():
     model_coco  = YOLO("yolov8n.pt")                  # auto-downloaded
-    model_zebra = YOLO("models/best.pt")               # your custom zebra model
-    model_light = YOLO("models/traffic_light.pt")      # your custom traffic light model
+    model_zebra =  None               # your custom zebra model
+    model_light = None # your custom traffic light model
     return model_coco, model_zebra, model_light
 
 @st.cache_resource
@@ -101,37 +101,35 @@ def format_counts(class_counts: dict) -> str:
 
 def process_frame(frame, current_time, last_narration_time, cooldown, audio_segments):
     """Run detection on one frame, return annotated frame + updated state."""
-    frame = cv2.resize(frame, (1280, 720))
+    frame = cv2.resize(frame, (640, 640))
     annotated = frame.copy()
 
     results_coco  = model_coco(frame,  verbose=False)
-    results_zebra = model_zebra(frame, verbose=False)
-    results_light = model_light(frame, verbose=False)
+    #results_zebra = model_zebra(frame, verbose=False)
+    #results_light = model_light(frame, verbose=False)
 
     class_counts, zebra_count, light_color = {}, 0, None
 
     # Traffic lights
-    for box in results_light[0].boxes:
-        cls   = int(box.cls[0])
-        label = model_light.names[cls]
-        conf  = float(box.conf[0])
-        if conf > 0.5:
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            color = (0, 255, 0) if label.lower() == "green" else (0, 0, 255)
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
-            cv2.putText(annotated, f"Light: {label}", (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-            light_color = label
-            break
+    #for box in results_light[0].boxes:
+     #   cls   = int(box.cls[0])
+      #  label = model_light.names[cls]
+       ###   x1, y1, x2, y2 = map(int, box.xyxy[0])
+          #  color = (0, 255, 0) if label.lower() == "green" else (0, 0, 255)
+           # cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
+            #cv2.putText(annotated, f"Light: {label}", (x1, y1 - 10),
+             #           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            #light_color = label
+            #break
 
     # Zebra crossings
-    for box in results_zebra[0].boxes:
-        if float(box.conf[0]) > 0.3:
-            zebra_count += 1
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 255, 0), 2)
-            cv2.putText(annotated, "Zebra crossing", (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+    #for box in results_zebra[0].boxes:
+    #    if float(box.conf[0]) > 0.3:
+     #       zebra_count += 1
+      #      x1, y1, x2, y2 = map(int, box.xyxy[0])
+         #   cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 255, 0), 2)
+       #     cv2.putText(annotated, "Zebra crossing", (x1, y1 - 10),
+        #                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
     # Vehicles + people
     for box in results_coco[0].boxes:
