@@ -6,9 +6,13 @@ import numpy as np
 import streamlit as st
 from ultralytics import YOLO
 from gtts import gTTS
+from dotenv import load_dotenv
 from groq import Groq
-
+from moviepy.editor import VideoFileClip, AudioFileClip
 from pydub import AudioSegment
+
+
+load_dotenv()
 
 # ─────────────────────────────────────────
 #  Page config
@@ -54,8 +58,8 @@ st.markdown('<div class="subtitle">Real-time navigation guidance for the visuall
 @st.cache_resource
 def load_models():
     model_coco  = YOLO("yolov8n.pt")                  # auto-downloaded
-    model_zebra =  None               # your custom zebra model
-    model_light = None # your custom traffic light model
+    model_zebra = YOLO("models/best.pt")               # your custom zebra model
+    model_light = YOLO("models/traffic_light.pt")      # your custom traffic light model
     return model_coco, model_zebra, model_light
 
 @st.cache_resource
@@ -105,31 +109,33 @@ def process_frame(frame, current_time, last_narration_time, cooldown, audio_segm
     annotated = frame.copy()
 
     results_coco  = model_coco(frame,  verbose=False)
-    #results_zebra = model_zebra(frame, verbose=False)
-    #results_light = model_light(frame, verbose=False)
+    results_zebra = model_zebra(frame, verbose=False)
+    results_light = model_light(frame, verbose=False)
 
     class_counts, zebra_count, light_color = {}, 0, None
 
     # Traffic lights
-    #for box in results_light[0].boxes:
-     #   cls   = int(box.cls[0])
-      #  label = model_light.names[cls]
-       ###   x1, y1, x2, y2 = map(int, box.xyxy[0])
-          #  color = (0, 255, 0) if label.lower() == "green" else (0, 0, 255)
-           # cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
-            #cv2.putText(annotated, f"Light: {label}", (x1, y1 - 10),
-             #           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-            #light_color = label
-            #break
+    for box in results_light[0].boxes:
+        cls   = int(box.cls[0])
+        label = model_light.names[cls]
+        conf  = float(box.conf[0])
+        if conf > 0.5:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            color = (0, 255, 0) if label.lower() == "green" else (0, 0, 255)
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
+            cv2.putText(annotated, f"Light: {label}", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+            light_color = label
+            break
 
     # Zebra crossings
-    #for box in results_zebra[0].boxes:
-    #    if float(box.conf[0]) > 0.3:
-     #       zebra_count += 1
-      #      x1, y1, x2, y2 = map(int, box.xyxy[0])
-         #   cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 255, 0), 2)
-       #     cv2.putText(annotated, "Zebra crossing", (x1, y1 - 10),
-        #                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+    for box in results_zebra[0].boxes:
+        if float(box.conf[0]) > 0.3:
+            zebra_count += 1
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 255, 0), 2)
+            cv2.putText(annotated, "Zebra crossing", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
     # Vehicles + people
     for box in results_coco[0].boxes:
@@ -173,10 +179,10 @@ def process_frame(frame, current_time, last_narration_time, cooldown, audio_segm
                     cv2.LINE_AA)
 
         # Generate TTS
-        #with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
-         #   gTTS(text=guidance, lang="en").save(tmp.name)
-         #   seg = AudioSegment.from_file(tmp.name, format="mp3")
-          #  audio_segments.append(seg + AudioSegment.silent(duration=400))
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+            gTTS(text=guidance, lang="en").save(tmp.name)
+            seg = AudioSegment.from_file(tmp.name, format="mp3")
+            audio_segments.append(seg + AudioSegment.silent(duration=400))
 
         last_narration_time = current_time
 
@@ -184,8 +190,6 @@ def process_frame(frame, current_time, last_narration_time, cooldown, audio_segm
 
 def merge_and_attach_audio(video_path, audio_segments, output_path):
     """Merge all TTS audio segments and attach to video."""
-    from moviepy.editor import VideoFileClip, AudioFileClip
-
     if not audio_segments:
         return video_path
 
@@ -229,21 +233,12 @@ st.sidebar.markdown("Detects traffic lights, zebra crossings, vehicles, and peop
 if "Image" in mode:
     uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded:
-        file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
+        file_bytes = np.frombuffer(uploaded.read(), np.uint8)
         frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-        if frame is None:
-            st.error("Could not read image.")
-            st.stop()
-        #file_bytes = np.frombuffer(uploaded.read(), np.uint8)
-        #frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        try:
-            with st.spinner("Running detection..."):
-                audio_segments = []
-                annotated, _ = process_frame(frame, 0, -999, cooldown, audio_segments)
-        except Exception as e:
-            st.error(f"Error occurred: {e}")
-            st.stop()
+        with st.spinner("Running detection..."):
+            audio_segments = []
+            annotated, _ = process_frame(frame, 0, -999, cooldown, audio_segments)
 
         col1, col2 = st.columns(2)
         with col1:

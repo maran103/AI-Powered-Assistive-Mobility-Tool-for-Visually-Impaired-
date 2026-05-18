@@ -1,9 +1,14 @@
+streamlit
 ultralytics
+torch
+torchvision
+torchaudio
 groq
 gtts
-opencv-python-headless
-streamlit
 moviepy==1.0.3
 pydub
+opencv-python-headless
+python-dotenv
 Pillow
 numpy
+imageio-ffmpeg
