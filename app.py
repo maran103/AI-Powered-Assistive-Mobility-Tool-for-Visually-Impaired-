@@ -7,7 +7,7 @@ import streamlit as st
 from ultralytics import YOLO
 from gtts import gTTS
 from groq import Groq
-from moviepy.editor import VideoFileClip, AudioFileClip
+
 from pydub import AudioSegment
 
 # ─────────────────────────────────────────
@@ -186,6 +186,8 @@ def process_frame(frame, current_time, last_narration_time, cooldown, audio_segm
 
 def merge_and_attach_audio(video_path, audio_segments, output_path):
     """Merge all TTS audio segments and attach to video."""
+    from moviepy.editor import VideoFileClip, AudioFileClip
+
     if not audio_segments:
         return video_path
 
@@ -229,8 +231,14 @@ st.sidebar.markdown("Detects traffic lights, zebra crossings, vehicles, and peop
 if "Image" in mode:
     uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if uploaded:
-        file_bytes = np.frombuffer(uploaded.read(), np.uint8)
+        file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
         frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+        if frame is None:
+            st.error("Could not read image.")
+            st.stop()
+        #file_bytes = np.frombuffer(uploaded.read(), np.uint8)
+        #frame = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
         with st.spinner("Running detection..."):
             audio_segments = []
