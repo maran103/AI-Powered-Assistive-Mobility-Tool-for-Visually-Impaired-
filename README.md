@@ -1,6 +1,6 @@
 ---
 title: AI Assistive Mobility Tool
-emoji: ???
+emoji: eye
 colorFrom: blue
 colorTo: purple
 sdk: docker
