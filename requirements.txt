@@ -10,5 +10,5 @@ pydub
 opencv-python-headless
 python-dotenv
 Pillow
-numpy
+numpy<2
 imageio-ffmpeg
