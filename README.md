@@ -1,4 +1,4 @@
-Set-Content README.md "# AI Assistive Mobility Tool for Visually Impaired
+## AI Assistive Mobility Tool for Visually Impaired
 
 Real-time road navigation assistant that helps visually impaired pedestrians cross roads safely using computer vision and LLM-powered voice guidance.
 
